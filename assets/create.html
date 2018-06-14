@@ -1,10 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
- <title>Creation page</title>
-</head>
+<html>
 <body>
-<h1> Create a bird here</h1>
+
+<h1>Create dog page</h1>
+Nombre:<input type="text" name=unput_name id="input_name">
+Vacuna: <input type="text" name=input_ing id="input_ing">
+
+<button onclick="newIng()">Añadir vacuna</button>
+<button onclick="sendDog()">Añadir perro</button>
+
+<p>Lista de vacunas</p>
+<p id="ingredient_list"></p>
+<p id="demo">demo</p>
+
+<script>
+var vacinnes=[];
+document.getElementById("demo").innerHTML = "page load"
+
+function newIng() {
+  document.getElementById("demo").innerHTML = "newIng start"
+  var new_vacinne= document.getElementById("input_ing").value;
+  if (new_vacinne==""){document.getElementById("ingredient_list").innerHTML = "invalid" }
+
+  else{
+    vacinnes.push(new_vacinne);
+    iLen = vacinnes.length;
+    text = "<ul>";
+    for (i = 0; i < iLen; i++) {
+        text += "<li>" + vacinnes[i]+"</li>";
+    }
+  }
+      text += "</ul>";
+      document.getElementById("input_ing").value="";
+      document.getElementById("ingredient_list").innerHTML = text;
+  
+}
+
+function sendDog(){
+	var dog_name= document.getElementById("input_name").value;
+	var new_dog={name: dog_name, vacinnes:vacinnes};
+
+	var url = "/dogs";
+	var json = JSON.stringify(new_dog);
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+	xhr.onload = function () {
+		var users = JSON.parse(xhr.responseText);
+		if (xhr.readyState == 4 && xhr.status == "201") {
+			console.table(users);
+		} else {
+			console.error(users);
+		}
+	}
+	xhr.send(json);
+
+}
+</script>
+
 </body>
 </html>

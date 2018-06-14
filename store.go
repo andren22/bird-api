@@ -26,6 +26,35 @@ func InitStore(s *sql.DB) {
 	//store = s
 	store=dbStore{s}
 }
+func (store *dbStore) CreateDog(dog *Dog) error {
+	var lastInsertId int
+	err := store.db.QueryRow("insert into dogs(name) values($1) returning id", dog.Name).Scan(&lastInsertId)
+	for i,v:= range dog.Vacinnes{
+			_,err=store.db.Query("UPDATE dogs set vacinnes[$1]=$2 where id=$3",i+1,v,lastInsertId)
+			checkErr(err)
+	}
+	return err
+}
+
+func (store *dbStore) GetDogs() ([]*Dog, error) {
+	fmt.Printf("\nGetting Birds'\n")
+
+	rows, err := store.db.Query("SELECT name, vacinnes from dogs")
+	// We return incase of an error, and defer the closing of the row structure
+	if err != nil {	return nil, err	}
+	defer rows.Close()
+
+
+	dogs := []*Dog{}
+	for rows.Next() {
+		dog := &Dog{}
+		if err := rows.Scan(&dog.Name, &dog.Vacinnes); err != nil {return nil, err}
+		dogs = append(dogs, dog)
+	}
+
+	return dogs, nil
+}
+
 
 func (store *dbStore) CreateBird(bird *Bird) error {
 	// 'Bird' is a simple struct which has "species" and "description" attributes

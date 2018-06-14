@@ -30,6 +30,8 @@ func newRouter() *mux.Router {
 	r.HandleFunc("/assets", getBirdIndex).Methods("GET")
 	r.HandleFunc("/assets", createBirdPage).Methods("POST")
 
+	r.HandleFunc("/dogs",getDogHandler).Methods("GET")
+	r.HandleFunc("/dogs",createDogHandler).Methods("POST")
 
 	r.HandleFunc("/bird", getBirdHandler).Methods("GET")
 	r.HandleFunc("/bird", createBirdHandler).Methods("POST")
@@ -73,6 +75,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func checkErr(err error) {
 	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
 		panic(err)
 	}
 }
